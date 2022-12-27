@@ -1,0 +1,336 @@
+﻿@model Account
+@{
+    var lstCart = ViewBag.Carts as List<Cart>;
+}
+
+<!-- Breadcrumb Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark" href="#">Home</a>
+                <span class="breadcrumb-item active">Checkout</span>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+<!-- Checkout Start -->
+<div class="container-fluid">
+    <form asp-controller="Accounts" asp-action="Signup" method="post" hidden id="send" enctype="multipart/form-data">
+        <input name="AvatarFile" id="avatarfile" type="file">
+        <input name="Username" type="text">
+        <input name="Password" type="text">
+        <input name="Email" type="email">
+        <input name="Phone" type="tel">
+        <input name="Address" type="text">
+        <input name="FullName" type="text" >
+    </form>
+
+    @*form ảo*@
+    
+    <form id="form-virual" enctype="multipart/form-data">
+        <div class="row px-xl-5">
+            <div class="col-lg-8">
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Personal Information</span></h5>
+                <div class="bg-light p-30 mb-5">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label>First Name</label>
+                            <input name="firstname" class="form-control" type="text" placeholder="John">
+                        </div>
+                        <div class="col-md-5 form-group">
+                            <label>Last Name</label>
+                            <input name="lastname" class="form-control" type="text" placeholder="Doe" required>
+                        </div>
+                        <div class="ml-2 form-group">
+                            <label>Avatar</label><br/>
+                            <a onclick="chooseFile();" class="btn btn-secondary" id="choose">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+                                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"></path>
+                                    <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"></path>
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>E-mail</label>
+                            <input name="email" class="form-control" type="email" placeholder="example@email.com" required>
+                            
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Phone numbers</label>
+                            <input name="phone" type="text" maxlength="10" minlength="10" pattern="(\+84|0)\d{9,10}" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Province or city</label>
+                            <select name="city" class="custom-select form-select form-select-sm mb-3" id="city" aria-label=".form-select-sm" required autocomplete="on">
+                                <option value="" selected>Choose province</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>District</label>
+                            <select name="district" class="custom-select form-select form-select-sm mb-3" id="district" aria-label=".form-select-sm" required autocomplete="on">
+                                <option value="" selected>Choose district</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Ward or commune</label>
+                            <select name="ward" class="custom-select form-select form-select-sm" id="ward" aria-label=".form-select-sm" required autocomplete="on">
+                                <option value="" selected>Choose wards</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Address</label>
+                            <input name="street" id="street" class="form-control" type="text" placeholder="123 Street" required>
+                        </div>
+                     </div>
+                </div>
+
+            </div>
+            <div class="col-lg-4">
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Account Information</span></h5>
+                <div class="bg-light p-30" style="margin-bottom: 20px">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input name="username" class="form-control" type="text" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input name="password" id="password" class="form-control" type="password">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm password</label>
+                        <input name="confirm" id="confirm" class="form-control" type="password">
+                    </div>
+                    <div class="col-md-12">
+                        <div class="custom-control custom-checkbox">
+                            <input name="check" type="checkbox" class="custom-control-input" id="shipto" onclick="showpass()">
+                            <label class="custom-control-label" for="shipto"s">Show password</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-5">
+                    <button id="btnCreate" class="btn btn-block btn-primary font-weight-bold py-3">Create an account</button>
+                    
+                </div>
+            </div>
+        </div>
+    </form>
+
+    
+    
+</div>
+
+<!-- Checkout End -->
+<!-- select address-->
+
+<script>
+    var citis = document.getElementById("city");
+    var districts = document.getElementById("district");
+    var wards = document.getElementById("ward");
+
+    var Parameter = {
+        url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+        method: "GET",
+        responseType: "application/json",
+    };
+    var promise = axios(Parameter);
+    promise.then(function (result) {
+        renderCity(result.data);
+    });
+
+    function renderCity(data) {
+        for (const x of data) {
+            citis.options[citis.options.length] = new Option(x.Name, x.Id);
+        }
+        citis.onchange = function () {
+            districts.length = 1;
+            wards.length = 1;
+            if (this.value != "") {
+                const result = data.filter(n => n.Id === this.value);
+
+                for (const k of result[0].Districts) {
+                    district.options[districts.options.length] = new Option(k.Name, k.Id);
+                }
+            }
+        };
+        district.onchange = function () {
+            wards.length = 1;
+            const dataCity = data.filter((n) => n.Id === citis.value);
+            if (this.value != "") {
+                const dataWards = dataCity[0].Districts.filter(n => n.Id === this.value)[0].Wards;
+
+                for (const w of dataWards) {
+                    wards.options[wards.options.length] = new Option(w.Name, w.Id);
+                }
+            }
+        };
+    }
+
+</script>
+<!-- get address -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#form-virual").validate({
+            onfocusout: false,
+            onkeyup: true,
+            onclick: false,
+            rules: {
+                "username": {
+                    required: true,
+                    maxlength: 15
+                },
+                "password": {
+                    required: true,
+                    minlength: 8
+                },
+                "confirm": {
+                    equalTo: "#password",
+                    minlength: 8
+                },
+                "firstname": {
+                    required: true,
+                    maxlength: 15
+                },
+                "lastname": {
+                    required: true,
+                    maxlength: 35
+                },
+                "street": {
+                    required: true,
+                    maxlength: 50
+                },
+                "email": {
+                    required: true,
+                    email: true,
+                },
+                "phone": {
+                    required: true,
+                    maxlengthmatches: "[0-9]+",
+                    minlength: 10,
+                    maxlength: 10
+                },
+            },
+            messages: {
+                //"username": {
+                //    required: "Please ",
+                //    maxlength: 15
+                //},
+                //"password": {
+                //    required: true,
+                //    minlength: 8
+                //},
+                //"confirm": {
+                //    equalTo: "#password",
+                //    minlength: 8
+                //},
+                //"firstname": {
+                //    required: true,
+                //    maxlength: 15
+                //},
+                //"lastname": {
+                //    required: true,
+                //    maxlength: 35
+                //},
+                //"street": {
+                //    required: true,
+                //    maxlength: 50
+                //},
+                //"email": {
+                //    required: true,
+                //    email: true,
+                //},
+                //"phone": {
+                //    required: true,
+                //    maxlengthmatches: "[0-9]+",
+                //    minlength: 10,
+                //    maxlength: 10
+                //},
+                "username": {
+                    required: "Bắt buộc nhập username",
+                    maxlength: "Hãy nhập tối đa 15 ký tự"
+                },
+                "password": {
+                    required: "Bắt buộc nhập password",
+                    minlength: "Hãy nhập ít nhất 8 ký tự"
+                },
+                "confirm": {
+                    equalTo: "Hai password phải giống nhau",
+                    minlength: "Hãy nhập ít nhất 8 ký tự"
+                },
+                "phone": {
+                    required: "Bắt buộc nhập số điện thoại",
+                    parent: "Định dạng sai"
+                }
+            }
+        });
+        $("#btnCreate").click(function (e) {
+            
+            e.preventDefault();
+
+            var fullname = $('input[name=firstname]').val() + ' '+ $('input[name=lastname]').val();
+
+            var citis = $('#city option:selected').text();
+            var districts = $('#district option:selected').text();
+            var wards = $('#ward option:selected').text();
+            var street = $('input[name=street]').val();
+            var address = citis + ", " + districts + ", " + wards + ", " + street;
+
+            var email = $('input[name=email]').val();
+            var phone = $('input[name=phone]').val();
+            var username = $('input[name=username]').val();
+            var password = $('input[name=password]').val();
+         
+            $('input[name=Username]').val(username);
+            $('input[name=Password]').val(password);
+            $('input[name=Phone]').val(phone);
+            $('input[name=Email]').val(email);
+            $('input[name=Address]').val(address);
+            $('input[name=FullName]').val(fullname);
+
+            $('#send').submit();
+        });
+    });
+
+</script>
+    <script>
+        function showpass() {
+            var x = document.getElementById("password");
+            var y = document.getElementById("confirm");
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
+            }
+            if (y.type === "password") {
+                y.type = "text";
+            } else {
+                y.type = "password";
+            }
+        }
+    </script>
+
+    <script>
+        function chooseFile() {
+            $("#avatarfile").click();
+        }
+
+        const inputElement = document.getElementById("avatarfile");
+     
+        inputElement.addEventListener("change", handleFiles, false);
+   
+        function handleFiles() {
+            const fileList = this.files;
+            if (fileList.length > 0){
+                $("#choose").addClass("btn-success");
+                $("#choose").appendChild(this.files[0].name);
+            }  
+        }
+
+   
+    </script>
+
+
+

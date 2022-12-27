@@ -1,0 +1,208 @@
+﻿@model Invoice
+@{
+    var lstCart = ViewBag.Carts as List<Cart>;
+    var user = ViewBag.User as Account;
+}
+
+<!-- Breadcrumb Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark" href="#">Home</a>
+                <a class="breadcrumb-item text-dark" href="#">Shop</a>
+                <span class="breadcrumb-item active">Checkout</span>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+<!-- Checkout Start -->
+<div class="container-fluid">
+    <form asp-controller="Carts" asp-action="Checkout" hidden id="send">
+        <input name="AccountId" type="number" class="form-control" value="@user.Id">
+        <input name="ShippingPhone" class="form-control" value="@user.Phone">
+        <input name="ShippingAddress" class="form-control" type="text" value="@user.Address"> 
+    </form>
+
+    @*form ảo*@
+
+    <form id="form-virual">
+        <div class="row px-xl-5">
+            <div class="col-lg-8">
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Billing Address</span></h5>
+                <div class="bg-light p-30 mb-5">
+                    <div class="row">        
+                        <div class="col-md-6 form-group">
+                            <label>Phone numbers</label>
+                            <input class="form-control" value="@user.Phone" readonly>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Address</label>
+                            <input class="form-control" value="@user.Address" readonly>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="custom-control custom-checkbox">
+                                <input name="check" type="checkbox" class="custom-control-input" id="shipto">
+                                <label class="custom-control-label" for="shipto" data-toggle="collapse" data-target="#shipping-address">Ship to different address</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="collapse mb-5" id="shipping-address">
+                    <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Shipping Address</span></h5>
+                    <div class="bg-light p-30">
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Phone numbers</label>
+                                <input name="phone" class="form-control">
+                            </div>
+                            <div class="col-md-6 form-group"></div>
+                            <div class="col-md-6 form-group">
+                                <label>Province or city</label>
+                                <select name="city" class="custom-select form-select form-select-sm mb-3" id="city" aria-label=".form-select-sm">
+                                    <option value="" selected>Choose province</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>District</label>
+                                <select name="district" class="custom-select form-select form-select-sm mb-3" id="district" aria-label=".form-select-sm">
+                                    <option value="" selected>Choose district</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Ward or commune</label>
+                                <select name="ward" class="custom-select form-select form-select-sm" id="ward" aria-label=".form-select-sm">
+                                    <option value="" selected>Choose wards</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Address</label>
+                                <input name="street" id="street" class="form-control" type="text" placeholder="123 Street">
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Order Total</span></h5>
+                <div class="bg-light p-30 mb-5">
+                    <div class="border-bottom">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-3 ">Products</h6>
+                            <h6 class="mb-3 ml-5">Quantitys</h6>
+                            <h6 class="mb-3"></h6>
+                        </div>
+                        @foreach (var item in lstCart)
+                        {
+                            <div class="d-flex justify-content-between">
+                                <p>@item.Product.Name</p>
+                                <p class=""></p>
+                                <p class="ml-4">@item.Quantity</p>
+                                <p>$@item.Product.Price</p>
+                            </div>
+                        }
+                    </div>
+                    <div class="border-bottom pt-3 pb-2">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h6>Subtotal</h6>
+                            <h6>$150</h6>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <h6 class="font-weight-medium">Shipping</h6>
+                            <h6 class="font-weight-medium">$10</h6>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <div class="d-flex justify-content-between mt-2">
+                            <h5>Total</h5>
+                            <h5>$160</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-5">
+                    <button id="btnOrder" class="btn btn-block btn-primary font-weight-bold py-3"><text class="text-light">Place Order</text></button>
+                </div>
+            </div>
+        </div>
+    </form>
+    
+
+</div>
+
+
+<!-- Checkout End -->
+<!-- select address-->
+
+<script>
+    var citis = document.getElementById("city");
+    var districts = document.getElementById("district");
+    var wards = document.getElementById("ward");
+
+    var Parameter = {
+        url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+        method: "GET",
+        responseType: "application/json",
+    };
+    var promise = axios(Parameter);
+    promise.then(function (result) {
+        renderCity(result.data);
+    });
+
+    function renderCity(data) {
+        for (const x of data) {
+            citis.options[citis.options.length] = new Option(x.Name, x.Id);
+        }
+        citis.onchange = function () {
+            districts.length = 1;
+            wards.length = 1;
+            if (this.value != "") {
+                const result = data.filter(n => n.Id === this.value);
+
+                for (const k of result[0].Districts) {
+                    district.options[districts.options.length] = new Option(k.Name, k.Id);
+                }
+            }
+        };
+        district.onchange = function () {
+            wards.length = 1;
+            const dataCity = data.filter((n) => n.Id === citis.value);
+            if (this.value != "") {
+                const dataWards = dataCity[0].Districts.filter(n => n.Id === this.value)[0].Wards;
+
+                for (const w of dataWards) {
+                    wards.options[wards.options.length] = new Option(w.Name, w.Id);
+                }
+            }
+        };
+    }
+
+</script>
+<!-- get address -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnOrder").click(function (e) {
+
+            e.preventDefault();
+
+            var citis = $('#city option:selected').text();
+            var districts = $('#district option:selected').text();
+            var wards = $('#ward option:selected').text();
+            var street = $('input[name=street]').val();
+
+            var phone = $('input[name=phone]').val();
+            var status = $('input[name=check]').is(":checked");
+
+            if (status) {
+                var address = citis + ", " + districts + ", " + wards + ", " + street;
+                $('input[name=ShippingPhone]').val(phone);
+                $('input[name=ShippingAddress]').val(address);
+            }
+            $('#send').submit();
+        });
+    });
+
+
+</script>

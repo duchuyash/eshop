@@ -1,0 +1,112 @@
+﻿@model IEnumerable<InvoiceDetail>
+@{
+    var invoice = ViewBag.Invoice as Invoice;
+}
+
+<h1 class="h3 mb-3 font-weight-bold">
+    <a type="button" class="btn btn-primary" asp-action="Index" asp-controller="Invoices" asp-area="Admin">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-90deg-left" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1.146 4.854a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H12.5A2.5 2.5 0 0 1 15 6.5v8a.5.5 0 0 1-1 0v-8A1.5 1.5 0 0 0 12.5 5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4z"></path>
+        </svg>
+        Back to list
+    </a>
+</h1>
+
+<div class="row">
+	<div class="col-12 col-lg-8">
+		<div class="card">
+			<div class="card-header">
+				<h5 class="card-title mb-0">Shopping list</h5>
+			</div>
+			<div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless mb-0">
+                        <thead>
+                            <tr class="text-light bg-secondary">
+                                <th scope="col">PRODUCT SKU</th>
+                                <th scope="col">PRODUCT NAME</th>
+                                <th scope="col">QUANTITY</th>
+                                <th scope="col">UNIT PRICE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.Product.SKU</td>
+                                    <td>@item.Product.Name</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@item.UnitPrice</td> 
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+			</div>
+		</div>
+	</div>
+	<div class="col-12 col-lg-4">
+		<div class="card">
+			<div class="card-header">
+                <h5 class="card-title mb-0">Shipment Details</h5>
+			</div>
+			<div class="card-body py-0">
+                    <table class="table table-borderless">
+                        <tr>
+                        <td scope="col"><b>CODE</b></td>
+                            <td scope="col">@invoice.Code</td>
+                        </tr>
+                        <tr>
+                        <td scope="col"><b>CUSTOMER NAME</b></td>
+                            <td scope="col">@invoice.Account.FullName</td>
+                        </tr>
+                        <tr>
+                        <td scope="col"><b>ISSUED DATE</b></td>
+                            <td scope="col">@invoice.IssuedDate</td>
+                        </tr>
+                        <tr>
+                        <td scope="col"><b>SHIPPING ADDRESS</b></td>
+                            <td scope="col">@invoice.ShippingAddress</td>
+                        </tr>
+                        <tr>
+                        <td scope="col"><b>SHIPPING PHONE</b></td>
+                            <td scope="col">@invoice.ShippingPhone</td>
+                        </tr>
+                        <tr>
+                        <td scope="col"><b>TOTAL</b></td>
+                            <td scope="col">$@invoice.Total</td>
+                        </tr>  
+                        <tr>
+                        <td class="col-3">
+                                <button asp-controller="Invoices" asp-action="Cancel" asp-area="Admin"
+                                        type="button" class="btn btn-danger">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                         fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z">
+                                        </path>
+                                        <path fill-rule="evenodd"
+                                              d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z">
+                                        </path>
+                                    </svg> Cancel order
+                                </button>
+                            </td>
+                            <td class="col-3">
+                                <button asp-controller="Invoices" asp-action="Completion" asp-area="Admin"
+                                        type="button" class="btn btn-success">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-check" viewBox="0 0 16 16">
+                                    <path d="M11.354 6.354a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z" />
+                                    <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                                </svg> Completion
+                                     
+                                </button>
+                            </td>
+                            
+                        </tr> 
+                    </table>
+               
+			</div>
+		</div>
+
+		
+	</div>
+</div>
